@@ -1,7 +1,9 @@
 require("dotenv").config();
 const { ethers } = require("ethers");
 const admin = require("firebase-admin");
-const serviceAccount = require("./firebaseConfig.json");
+
+// Parse the Firebase config from environment variable
+const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 
 // Initialize Firebase
 admin.initializeApp({
@@ -37,7 +39,7 @@ async function checkBalances() {
 
     const wallet = new ethers.Wallet(privateKey, provider);
     const contract = new ethers.Contract(usdtAddress, usdtAbi, wallet);
-    
+
     try {
       const balance = await contract.balanceOf(address);
 
@@ -66,3 +68,4 @@ async function checkBalances() {
 
 // Run every 30 seconds
 setInterval(checkBalances, 30000);
+
