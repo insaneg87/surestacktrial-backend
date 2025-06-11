@@ -2,13 +2,14 @@ require("dotenv").config();
 const { ethers } = require("ethers");
 const admin = require("firebase-admin");
 
-// Parse the Firebase config from environment variable
+// Load Firebase credentials from environment variable
 const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 
 // Initialize Firebase
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
+
 const db = admin.firestore();
 
 // Set up blockchain provider
@@ -17,7 +18,7 @@ const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 // USDT contract ABI (simplified)
 const usdtAbi = [
   "function balanceOf(address) view returns (uint)",
-  "function transfer(address to, uint amount) returns (bool)"
+  "function transfer(address to, uint amount) returns (bool)",
 ];
 
 const usdtAddress = process.env.USDT_CONTRACT;
@@ -55,7 +56,7 @@ async function checkBalances() {
         await db.collection("users").doc(doc.id).update({
           lastDeposit: readableAmount,
           lastChecked: new Date().toISOString(),
-          lastForwardedTx: tx.hash
+          lastForwardedTx: tx.hash,
         });
       } else {
         console.log(`User ${doc.id}: No USDT.`);
@@ -68,4 +69,5 @@ async function checkBalances() {
 
 // Run every 30 seconds
 setInterval(checkBalances, 30000);
+
 
